@@ -7,6 +7,7 @@ import rclpy
 
 
 def main(args=None):
+    print(args)
     #Create ROS2 Node
     rclpy.init(args=args)
     publisher = Publisher()
@@ -22,7 +23,7 @@ def main(args=None):
 
     #Run Web Interface
     webApp = App(_eventHandler)
-    webApp.run(5001)
+    webApp.run(8080)
 
     #Destroy ROS2 Node
     publisher.destroy_node()
