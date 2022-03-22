@@ -1,11 +1,12 @@
 from setuptools import setup
 
 package_name = 'beeldverwerking'
+submodules = "beeldverwerking/submodules"
 
 setup(
     name=package_name,
     version='0.0.0',
-    packages=[package_name],
+    packages=["beeldverwerking", "beeldverwerking/submodules"],
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
@@ -16,10 +17,11 @@ setup(
     maintainer='njenneboer',
     maintainer_email='nicjeneboer@gmail.com',
     description='TODO: Package description',
-    license='TODO: License declaration',
+    license='Apache License 2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'interface = beeldverwerking.interface:main',
         ],
     },
 )
