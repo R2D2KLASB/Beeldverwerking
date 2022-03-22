@@ -1,5 +1,5 @@
 from crypt import methods
-from flask import Flask, redirect, request, flash
+from flask import Flask, redirect, request
 import json
 
 
@@ -8,7 +8,6 @@ class App:
     def __init__(self, eventHandler):
         self.eventHandler = eventHandler
         self.webApp = Flask(__name__, static_url_path='/static')
-        self.webApp.secret_key = b'TEST'
         self.addUrls()
 
     # Declarage pages
