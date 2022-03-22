@@ -1,12 +1,14 @@
 from setuptools import setup
 
 package_name = 'beeldverwerking'
-submodules = "beeldverwerking/submodules"
+web = 'beeldverwerking/web'
+image = 'beeldverwerking/image'
+publisher = 'beeldverwerking/publisher'
 
 setup(
     name=package_name,
     version='0.0.0',
-    packages=["beeldverwerking", "beeldverwerking/submodules"],
+    packages=["beeldverwerking", "beeldverwerking/web", "beeldverwerking/image", "beeldverwerking/publisher"],
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
