@@ -16,9 +16,13 @@ cd Beeldverwerking
 
 # Run
 
-Talker:
+Talker( Web Interface ):
 ```
 ros2 run beeldverwerking talker
+```
+Talker( Command-Line ):
+```
+ros2 run beeldverwerking talker "path-to-image"
 ```
 
 Subscriber:
