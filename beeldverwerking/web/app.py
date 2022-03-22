@@ -41,7 +41,7 @@ class App:
             # Render button for sending image data over ROS2
             htmlSend = '''
                 <form action="/send" method=post enctype=multipart/form-data>
-                    <input type="hidden" name="image" value="''' + image['jpg'].decode("utf-8") + '''">
+                    <input type="hidden" name="image" value="''' + images[-1]['jpg'].decode("utf-8") + '''">
                     <input type=submit value=Send>
                 </form>
             '''
@@ -57,7 +57,7 @@ class App:
     def send(self):
         image = request.form.get('image')
         self.eventHandler.runEvent('send')(image)
-        return '<h1>Image send</h1>'
+        return '<h1>Image is sended over ros2</h1>' + self.home()
 
     # Run Web Interface
     def run(self, port=5000):

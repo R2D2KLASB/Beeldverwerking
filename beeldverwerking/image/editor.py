@@ -1,4 +1,5 @@
 
+import io
 import cv2
 import numpy as np
 from base64 import b64encode
@@ -9,7 +10,10 @@ def encode(image):
     return b64encode(cv2.imencode('.jpg', image)[1].tobytes())
 
 def editImage(image):
-    image = np.fromstring(image, np.uint8)
+    if isinstance(image, io.BufferedReader):
+        image = np.asarray(bytearray(image.read()), dtype=np.uint8)
+    else:
+        image = np.fromstring(image, np.uint8)
     image = cv2.imdecode(image,cv2.IMREAD_COLOR)
     oldImage = image
 
