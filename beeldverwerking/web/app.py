@@ -35,24 +35,30 @@ class App:
             # Check the eventHandler and run function if excist
             images = self.eventHandler.runEvent('upload')(file.stream.read())
             htmlImages = ''
+            # Render all images from the imageEditor
             for image in images:
                 htmlImages += '<p>' + image['name'] + '</p><img height="auto" width="200px" src="data:;base64,'+ image['jpg'].decode("utf-8") +'"/>'
+            # Render button for sending image data over ROS2
             htmlSend = '''
                 <form action="/send" method=post enctype=multipart/form-data>
+                    <input type="hidden" name="image" value="''' + image['jpg'].decode("utf-8") + '''">
                     <input type=submit value=Send>
                 </form>
             '''
             return self.home() + '<h1>' + file.filename + ' uploaded</h1>' + htmlImages + htmlSend
         else:
+            # Return to home
             return '''<script LANGUAGE='JavaScript'>
                         window.alert('File not supported');
                         window.location.href='/';
                     </script>'''
     
+    #Send image over ROS2
     def send(self):
-        self.eventHandler.runEvent('send')('test')
+        image = request.form.get('image')
+        self.eventHandler.runEvent('send')(image)
         return '<h1>Image send</h1>'
 
     # Run Web Interface
-    def run(self):
-        self.webApp.run()
+    def run(self, port=5000):
+        self.webApp.run(port=port)

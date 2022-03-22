@@ -22,7 +22,7 @@ def main(args=None):
 
     #Run Web Interface
     webApp = App(_eventHandler)
-    webApp.run()
+    webApp.run(5001)
 
     #Destroy ROS2 Node
     publisher.destroy_node()
