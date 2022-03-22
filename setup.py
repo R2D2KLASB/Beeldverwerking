@@ -3,12 +3,12 @@ from setuptools import setup
 package_name = 'beeldverwerking'
 web = 'beeldverwerking/web'
 image = 'beeldverwerking/image'
-publisher = 'beeldverwerking/publisher'
+publisher = 'beeldverwerking/publisher_node'
 
 setup(
     name=package_name,
     version='0.0.0',
-    packages=["beeldverwerking", "beeldverwerking/web", "beeldverwerking/image", "beeldverwerking/publisher"],
+    packages=["beeldverwerking", "beeldverwerking/web", "beeldverwerking/image", "beeldverwerking/publisher_node"],
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
@@ -23,7 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'interface = beeldverwerking.interface:main',
+            'talker = beeldverwerking.talker:main',
+            'listener = beeldverwerking.listener:main',
         ],
     },
 )

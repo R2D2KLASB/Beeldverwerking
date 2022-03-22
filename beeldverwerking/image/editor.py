@@ -1,10 +1,16 @@
 
 import cv2
+import numpy as np
+from base64 import b64encode
   
 ## IMAGE EDITOR ##
 
-def editImage(image):
+def encode(image):
+    return b64encode(cv2.imencode('.jpg', image)[1].tobytes())
 
+def editImage(image):
+    image = np.fromstring(image, np.uint8)
+    image = cv2.imdecode(image,cv2.IMREAD_COLOR)
     oldImage = image
 
     #Make Image Gray
@@ -29,13 +35,16 @@ def editImage(image):
     #Return Images
     return [{
         'name': 'old',
-        'image': oldImage 
+        'image': oldImage,
+        'jpg': encode(oldImage)
     },
     {
         'name': 'new',
         'image': image,
+        'jpg': encode(image)
     },
     {
         'name': 'contours',
         'image': countoursImage,
+        'jpg': encode(countoursImage)
     }]
