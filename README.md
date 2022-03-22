@@ -12,11 +12,7 @@ git clone https://github.com/R2D2KLASB/Beeldverwerking.git -b dev
 cd Beeldverwerking
 ./install.sh
 ```
-If package 'beeldverwerking' not found:
-```
-cd "PATH-TO-ROS2-ENVIROMENT"
-. install/setup.bash
-```
+
 
 # Run
 
@@ -28,6 +24,12 @@ ros2 run beeldverwerking talker
 Subscriber:
 ```
 ros2 run beeldverwerking subscriber
+```
+
+If package 'beeldverwerking' not found:
+```
+cd "PATH-TO-ROS2-ENVIROMENT"
+. install/setup.bash
 ```
 
 Don't forget to source your ROS 2 installation before running an package!
