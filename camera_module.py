@@ -13,5 +13,5 @@ camera.start_preview()
 while True:
         if GPIO.input(37)== GPIO.HIGH:
                 print("Smile")
-                camera.capture('assets/Picture.jpg')
+                camera.capture('picture.jpg')
                 sleep(2)
