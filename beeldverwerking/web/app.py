@@ -33,19 +33,15 @@ class App:
         # Check if file is an suporrted image otherwise return to home
         if file.filename.split('.')[-1] in extensions:
             # Check the eventHandler and run function if excist
-            images = self.eventHandler.runEvent('upload')(file.stream.read())
-            htmlImages = ''
-            # Render all images from the imageEditor
-            for image in images:
-                htmlImages += '<p>' + image['name'] + '</p><img height="auto" width="200px" src="data:;base64,'+ image['jpg'].decode("utf-8") +'"/>'
-            # Render button for sending image data over ROS2
+            response = self.eventHandler.runEvent('upload')(file.stream.read())
+            # Render button for sending gcode data over ROS2
             htmlSend = '''
                 <form action="/send" method=post enctype=multipart/form-data>
-                    <input type="hidden" name="image" value="''' + images[-1]['jpg'].decode("utf-8") + '''">
+                    <textarea name="gcode" rows="200" cols="100">''' + response['gcode'] + '''</textarea>
                     <input type=submit value=Send>
                 </form>
             '''
-            return self.home() + '<h1>' + file.filename + ' uploaded</h1>' + htmlImages + htmlSend
+            return self.home() + '<h1>' + file.filename + ' uploaded</h1>' + response['image'] + htmlSend
         else:
             # Return to home
             return '''<script LANGUAGE='JavaScript'>
@@ -55,7 +51,7 @@ class App:
     
     #Send image over ROS2
     def send(self):
-        image = request.form.get('image')
+        image = request.form.get('gcode')
         self.eventHandler.runEvent('send')(image)
         return '<h1>Image is sended over ros2</h1>' + self.home()
 

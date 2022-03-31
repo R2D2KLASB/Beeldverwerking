@@ -5,11 +5,23 @@ import numpy as np
 from base64 import b64encode
 import os
 from ament_index_python.packages import get_package_share_directory
+from svg_to_gcode.svg_parser import parse_file
+from svg_to_gcode.compiler import Compiler, interfaces
+
+
+def svg2gcode(path, name):
+    gcode_compiler = Compiler(interfaces.Gcode, movement_speed=100, cutting_speed=100, pass_depth=10)
+
+    curves = parse_file(path + "/" + name) # Parse an svg file into geometric curves
+
+    gcode_compiler.append_curves(curves) 
+    gcode_compiler.compile_to_file(path + "/" + "tmp.gcode", passes=2)
+
 
 ## IMAGE EDITOR ##
 
 def encode(image):
-    return b64encode(cv2.imencode('.jpg', image)[1].tobytes())
+    return b64encode(cv2.imencode('.svg', image).tobytes())
 
 def editImage(image):
     if isinstance(image, io.BufferedReader):
@@ -41,24 +53,23 @@ def editImage(image):
     # ROS2 Package path
     rp = get_package_share_directory('beeldverwerking')
     
-
+    # Save Image
     cv2.imwrite(rp + '/tmp.bmp', countoursImage)
 
+    # BMP TO SVG
     os.system("potrace " + rp + "/tmp.bmp --svg -o" + rp + "/tmp.svg")
 
-    #Return Images
-    return [{
-        'name': 'old',
-        'image': oldImage,
-        'jpg': encode(oldImage)
-    },
-    {
-        'name': 'new',
+    # SVG TO GCODE
+    svg2gcode(rp, 'tmp.svg')
+
+    with open(rp + "/" + 'tmp.svg', "r") as image_file:
+        image = image_file.read()
+
+    with open(rp + "/" + 'tmp.gcode', "r") as gcode_file:
+        gcode = gcode_file.read()
+
+    #Return Image and Gcode
+    return {
         'image': image,
-        'jpg': encode(image)
-    },
-    {
-        'name': 'contours',
-        'image': countoursImage,
-        'jpg': encode(countoursImage)
-    }]
+        'gcode': gcode,
+    }
