@@ -35,13 +35,35 @@ class App:
             # Check the eventHandler and run function if excist
             response = self.eventHandler.runEvent('upload')(file.stream.read())
             # Render button for sending gcode data over ROS2
-            htmlSend = '''
+            htmlSend = '''<p></p>
                 <form action="/send" method=post enctype=multipart/form-data>
-                    <textarea name="gcode" rows="200" cols="100">''' + response['gcode'] + '''</textarea>
+                    <textarea id="gcodetext" name="gcode" rows="200" cols="100">''' + response['gcode'] + '''</textarea>
                     <input type=submit value=Send>
                 </form>
             '''
-            return self.home() + '<h1>' + file.filename + ' uploaded</h1>' + response['image'] + htmlSend
+            htmlSave = '''<button id="save-button">Save</button>'''
+            Js = '''<script>
+                        function saveTextAsFile() {
+                            var textToWrite = document.getElementById('gcodetext').innerHTML;
+                            var textFileAsBlob = new Blob([ textToWrite ], { type: 'text/plain' });
+                            var fileNameToSaveAs = "image.gcode"; //filename.extension
+                            var downloadLink = document.createElement("a");
+                            downloadLink.download = fileNameToSaveAs;
+                            downloadLink.innerHTML = "Download File";
+                            if (window.webkitURL != null) {
+                                downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+                            } else {
+                                downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                                downloadLink.onclick = destroyClickedElement;
+                                downloadLink.style.display = "none";
+                                document.body.appendChild(downloadLink);
+                            }
+                            downloadLink.click();
+                        }
+                        var button = document.getElementById('save-button');
+                        button.addEventListener('click', saveTextAsFile);
+                    </script>'''
+            return self.home() + '<h1>' + file.filename + ' uploaded</h1>' + response['image'] + htmlSend + htmlSave + Js 
         else:
             # Return to home
             return '''<script LANGUAGE='JavaScript'>

@@ -10,7 +10,7 @@ from svg_to_gcode.compiler import Compiler, interfaces
 
 
 def svg2gcode(path, name):
-    gcode_compiler = Compiler(interfaces.Gcode, movement_speed=100, cutting_speed=100, pass_depth=10)
+    gcode_compiler = Compiler(interfaces.Gcode, movement_speed=100, cutting_speed=100, pass_depth=0)
 
     curves = parse_file(path + "/" + name) # Parse an svg file into geometric curves
 
