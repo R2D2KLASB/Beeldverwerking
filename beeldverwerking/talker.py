@@ -33,19 +33,20 @@ def main(args=None):
 
     if len(par) > 1:
         # Camera
-        if par[1] == 'camera':
-            # Setup camera
-            piCamera = Camera(26)
-            while(True):
-                # Check if button pressed
-                if piCamera.checkButton():
-                    # Create Picture
-                    piCamera.createPic(rp, 'pi.jpg')
-                    # Get gcode from image
-                    response = _eventHandler.runEvent('upload')(rp + "/pi.jpg")
-                    # Send gcode over ROS2
-                    _eventHandler.runEvent('send')(response['gcode'])
-                    time.sleep(2)
+        if len(par) == 2:
+            if par[1] == 'camera':
+                # Setup camera
+                piCamera = Camera(int(par[1]))
+                while(True):
+                    # Check if button pressed
+                    if piCamera.checkButton():
+                        # Create Picture
+                        piCamera.createPic(rp, 'pi.jpg')
+                        # Get gcode from image
+                        response = _eventHandler.runEvent('upload')(rp + "/pi.jpg")
+                        # Send gcode over ROS2
+                        _eventHandler.runEvent('send')(response['gcode'])
+                        time.sleep(2)
 
 
         # Command-Line

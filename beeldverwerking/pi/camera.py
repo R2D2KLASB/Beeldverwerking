@@ -9,7 +9,7 @@ class Camera():
 
     def __init__(self, pin):
         self.pin = pin
-        # GPIO.setmode(GPIO.BOARD)
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
         self.camera = cv2.VideoCapture('/dev/video0', cv2.CAP_V4L)
         self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
