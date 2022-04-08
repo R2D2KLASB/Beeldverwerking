@@ -1,6 +1,8 @@
 from time import sleep
-from picamera import PiCamera
+import cv2
 import RPi.GPIO as GPIO
+
+
 
 
 class Camera():
@@ -9,14 +11,16 @@ class Camera():
         self.pin = pin
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.pin, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
-        self.camera = PiCamera()
-        self.camera.resolution = (1920, 1080)
-        self.camera.start_preview()
+        self.camera = cv2.VideoCapture('/dev/video0', cv2.CAP_V4L)
+        self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+        self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+
 
     def createPic(self, path, file):
-        self.camera.capture(path + '/' + file)
+        ret, frame = self.camera.read()
+        cv2.imwrite(path + '/' + file, frame)
 
     def checkButton(self):
-        if GPIO.input(self.pin)== GPIO.HIGH:
+        if GPIO.input(self.pin) == GPIO.HIGH:
             return True
         return False
