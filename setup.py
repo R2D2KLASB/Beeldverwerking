@@ -5,6 +5,7 @@ web = 'beeldverwerking/web'
 image = 'beeldverwerking/image'
 publisher = 'beeldverwerking/publisher_node'
 listener = 'beeldverwerking/listener_node'
+pi = 'beeldverwerking/pi'
 
 setup(
     name=package_name,
@@ -14,7 +15,8 @@ setup(
         "beeldverwerking/web", 
         "beeldverwerking/image", 
         "beeldverwerking/publisher_node", 
-        "beeldverwerking/listener_node"
+        "beeldverwerking/listener_node",
+        "beeldverwerking/pi"
         ],
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -31,7 +33,7 @@ setup(
     entry_points={
         'console_scripts': [
             'talker = beeldverwerking.talker:main',
-            'subscriber = beeldverwerking.listener:main',
+            'subscriber = beeldverwerking.listener:main'
         ],
     },
 )
