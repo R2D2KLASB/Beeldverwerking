@@ -35,7 +35,7 @@ def main(args=None):
         # Camera
         if par[1] == 'camera':
             # Setup camera
-            piCamera = Camera(37)
+            piCamera = Camera(26)
             while(True):
                 # Check if button pressed
                 if piCamera.checkButton():
