@@ -7,7 +7,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from svg_to_gcode.svg_parser import parse_file
 from svg_to_gcode.compiler import Compiler, interfaces
-
+import simp
 
 def svg2gcode(path, name):
     gcode_compiler = Compiler(interfaces.Gcode, movement_speed=100, cutting_speed=100, pass_depth=0)
