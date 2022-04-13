@@ -12,7 +12,7 @@ def svgToGcode(path, name):
         curves = parse_file(path + "/" + name) # Parse an svg file into geometric curves
 
         gcode_compiler.append_curves(curves) 
-        gcode_compiler.compile_to_file(path + "/" + "tmp.gcode", passes=2)
+        gcode_compiler.compile_to_file(path + "/" + "tmp.gcode", passes=1)
         
         with open(path + "/" + 'tmp.gcode', "r") as gcode:
             gcode = simplifier(list(gcode))
@@ -41,15 +41,16 @@ def simplifier(gcode):
                     temp = re.compile("([a-zA-Z]+)([0-9]+)")
                     items = temp.match(word).groups()
                     tmp_gcode +=(items[0])
-                    tmp_gcode +=(str(float(items[1]) * 40))
+                    tmp_gcode +=(str(float(items[1]) * 20))
                 elif "Y" in word:
                     temp = re.compile("([a-zA-Z]+)([0-9]+)")
                     items = temp.match(word).groups()
                     tmp_gcode +=(items[0])
-                    tmp_gcode +=(str(float(items[1]) * 40))
-                    tmp_gcode +=(";")
+                    tmp_gcode +=(str(float(items[1]) * 20))
+                    tmp_gcode +=("")
                 if "\n" not in word:
                     tmp_gcode +=(" ")
                 elif "\n" in word:
                     tmp_gcode +=("\n")
+    tmp_gcode += 'G28'
     return tmp_gcode
