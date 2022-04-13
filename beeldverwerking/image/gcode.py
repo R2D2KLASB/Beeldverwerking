@@ -45,17 +45,17 @@ def simplifier(gcode, scale=False):
                     items = temp.match(word).groups()
                     tmp_gcode +=(items[0])
                     if scale:
-                        tmp_gcode +=(str(int(items[1]) * scale))
+                        tmp_gcode +=(str(float(items[1]) * scale))
                     else:
-                        tmp_gcode +=(str(int(items[1])))
+                        tmp_gcode +=(str(float(items[1])))
                 elif "Y" in word:
                     temp = re.compile("([a-zA-Z]+)([0-9]+)")
                     items = temp.match(word).groups()
                     tmp_gcode +=(items[0])
                     if scale:
-                        tmp_gcode +=(str(int(items[1]) * scale))
+                        tmp_gcode +=(str(float(items[1]) * scale))
                     else:
-                        tmp_gcode +=(str(int(items[1])))
+                        tmp_gcode +=(str(float(items[1])))
                     tmp_gcode +=("")
                 if "\n" not in word:
                     tmp_gcode +=(" ")
