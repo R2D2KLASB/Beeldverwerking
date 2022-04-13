@@ -1,13 +1,14 @@
 from .web.app import App
-from .web.eventhandler import eventHandler
-from .image.editor import editImage
+from .handler.eventhandler import eventHandler
+from .image.editor import *
+from .image.gcode import *
 from .publisher_node.publisherNode import Publisher
-from .pi.camera import Camera
 import rclpy
 import sys
 import time
 from os.path import exists
 from ament_index_python.packages import get_package_share_directory
+# from .pi.camera import Camera
 
 
 
@@ -26,8 +27,12 @@ def main(args=None):
     _eventHandler = eventHandler()
 
     #Add function to evendHandler 
-        #Image editing
-    _eventHandler.createEvent('upload', lambda file: editImage(file))
+        #Image edge detection
+    _eventHandler.createEvent('edit', lambda file: imageToEdge(file))
+        #Image to SVG
+    _eventHandler.createEvent('svg', lambda file: edgeToSVG(file))
+        #SVG to Gcode
+    _eventHandler.createEvent('gcode', lambda path, name: svgToGcode(path, name))
         #Send over ROS2
     _eventHandler.createEvent('send', lambda image: publisher.send_image(image))
 

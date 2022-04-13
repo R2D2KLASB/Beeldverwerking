@@ -1,4 +1,6 @@
 from flask import Flask, redirect, request
+from base64 import b64decode
+
 
 class App:
     
@@ -12,6 +14,7 @@ class App:
         self.webApp.add_url_rule('/', 'index', self.home, methods=["GET"])
         self.webApp.add_url_rule('/upload', 'upload', self.uploaded, methods=['POST'])
         self.webApp.add_url_rule('/send', 'send', self.send, methods=['POST'])
+        self.webApp.add_url_rule('/make', 'make', self.make, methods=['POST'])
 
     # Homepage
     def home(self):
@@ -33,43 +36,60 @@ class App:
         # Check if file is an suporrted image otherwise return to home
         if file.filename.split('.')[-1] in extensions:
             # Check the eventHandler and run function if excist
-            response = self.eventHandler.runEvent('upload')(file.stream.read())
-            # Render button for sending gcode data over ROS2
-            htmlSend = '''<p></p>
-                <form action="/send" method=post enctype=multipart/form-data>
-                    <textarea id="gcodetext" name="gcode" rows="200" cols="100">''' + response['gcode'] + '''</textarea>
-                    <input type=submit value=Send>
+            image = self.eventHandler.runEvent('edit')(file.stream.read()).decode("utf-8")
+            # If image editing succes
+            if image:
+                sendButton = '''
+                <form action="/make" method=post enctype=multipart/form-data>
+                    <input type="text" hidden="true" name="image" value="''' + image + '''">
+                    <input type="submit" value="Continue">
                 </form>
-            '''
-            htmlSave = '''<button id="save-button">Save</button>'''
-            Js = '''<script>
-                        function saveTextAsFile() {
-                            var textToWrite = document.getElementById('gcodetext').innerHTML;
-                            var textFileAsBlob = new Blob([ textToWrite ], { type: 'text/plain' });
-                            var fileNameToSaveAs = "image.gcode"; //filename.extension
-                            var downloadLink = document.createElement("a");
-                            downloadLink.download = fileNameToSaveAs;
-                            downloadLink.innerHTML = "Download File";
-                            if (window.webkitURL != null) {
-                                downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
-                            } else {
-                                downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-                                downloadLink.onclick = destroyClickedElement;
-                                downloadLink.style.display = "none";
-                                document.body.appendChild(downloadLink);
+                '''
+                return self.home() + '<h1>Detected lines, ok? click continue</h1><img height="auto" width="400px" src="data:;base64,'+ image +'"/>' + sendButton
+            else:
+                return self.home() + '<h1>Error image editing</h1>'
+
+
+    def make(self):
+        image = request.form['image']
+        svg, path, name = self.eventHandler.runEvent('svg')(image)
+        if svg:
+            gcode = self.eventHandler.runEvent('gcode')(path, name)
+            if gcode:
+                htmlSend = '''<p></p>
+                    <form action="/send" method=post enctype=multipart/form-data>
+                        <input type=submit value=Send>
+                        <p></p>
+                        <textarea id="gcodetext" name="gcode" rows="200" cols="100">''' + gcode + '''</textarea>
+                    </form>
+                    '''
+                htmlSave = '''<p></p><button id="save-button">Save</button><p></p>'''
+                Js = '''<script>
+                            function saveTextAsFile() {
+                                var textToWrite = document.getElementById('gcodetext').innerHTML;
+                                var textFileAsBlob = new Blob([ textToWrite ], { type: 'text/plain' });
+                                var fileNameToSaveAs = "image.gcode"; //filename.extension
+                                var downloadLink = document.createElement("a");
+                                downloadLink.download = fileNameToSaveAs;
+                                downloadLink.innerHTML = "Download File";
+                                if (window.webkitURL != null) {
+                                    downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+                                } else {
+                                    downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                                    downloadLink.onclick = destroyClickedElement;
+                                    downloadLink.style.display = "none";
+                                    document.body.appendChild(downloadLink);
+                                }
+                                downloadLink.click();
                             }
-                            downloadLink.click();
-                        }
-                        var button = document.getElementById('save-button');
-                        button.addEventListener('click', saveTextAsFile);
-                    </script>'''
-            return self.home() + '<h1>' + file.filename + ' uploaded</h1>' + response['image'] + htmlSend + htmlSave + Js 
+                            var button = document.getElementById('save-button');
+                            button.addEventListener('click', saveTextAsFile);
+                        </script>'''
+                return svg + htmlSave + htmlSend + Js 
+            else:
+                return self.home + "<h1>Error creating GCODE</h1>"
         else:
-            # Return to home
-            return '''<script LANGUAGE='JavaScript'>
-                        window.alert('File not supported');
-                        window.location.href='/';
-                    </script>'''
+            return self.home + "<h1>Error creating SVG</h1>"
     
     #Send image over ROS2
     def send(self):

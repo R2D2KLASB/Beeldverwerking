@@ -5,7 +5,8 @@ web = 'beeldverwerking/web'
 image = 'beeldverwerking/image'
 publisher = 'beeldverwerking/publisher_node'
 listener = 'beeldverwerking/listener_node'
-pi = 'beeldverwerking/pi'
+handler = 'beeldverwerking/handler'
+# pi = 'beeldverwerking/pi'
 
 setup(
     name=package_name,
@@ -16,7 +17,8 @@ setup(
         "beeldverwerking/image", 
         "beeldverwerking/publisher_node", 
         "beeldverwerking/listener_node",
-        "beeldverwerking/pi"
+        "beeldverwerking/handler",
+        # "beeldverwerking/pi",
         ],
     data_files=[
         ('share/ament_index/resource_index/packages',

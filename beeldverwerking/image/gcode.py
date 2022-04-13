@@ -1,19 +1,40 @@
+from svg_to_gcode.svg_parser import parse_file
+from svg_to_gcode.compiler import Compiler, interfaces
 from svg_to_gcode import TOLERANCES
 import re
 
 TOLERANCES['approximation'] = 0.8
 
+def svgToGcode(path, name):
+    try:
+        gcode_compiler = Compiler(interfaces.Gcode, movement_speed=100, cutting_speed=100, pass_depth=0)
+
+        curves = parse_file(path + "/" + name) # Parse an svg file into geometric curves
+
+        gcode_compiler.append_curves(curves) 
+        gcode_compiler.compile_to_file(path + "/" + "tmp.gcode", passes=2)
+        
+        with open(path + "/" + 'tmp.gcode', "r") as gcode:
+            gcode = simplifier(list(gcode))
+
+        return gcode
+    except:
+        return False
+
 def simplifier(gcode):
+    down = False
     tmp_gcode = ''
     for line in gcode[2:]:
         if "M5" in line:
-            tmp_gcode += line
-        elif "M3" in line:
-            tmp_gcode +=("M3;\n")
+            down = True
         elif "G1" in line:
             for word in line.split(" "):
                 if "G1" in word:
-                    tmp_gcode +=(word)
+                    if down:
+                        tmp_gcode += 'G0'
+                        down = False
+                    else:
+                        tmp_gcode += word
                 elif "F" in word:
                     continue
                 elif "X" in word:
