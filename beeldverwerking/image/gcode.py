@@ -71,7 +71,6 @@ def get_scale(gcode, maxXY):
     for line in tmp:
         if "G" in line:
             for word in line.split(" "):
-                print('word')
                 if "X" in word:
                     print('ja')
                     temp = re.compile("([a-zA-Z]+)([0-9]+)")
