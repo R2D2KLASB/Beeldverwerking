@@ -75,7 +75,7 @@ def main(args=None):
     # Web Interface
     else:
         #Run Web Interface
-        webApp = App(_eventHandler)
+        webApp = App(_eventHandler, rp)
         webApp.run(8080)
 
     #Destroy ROS2 Node

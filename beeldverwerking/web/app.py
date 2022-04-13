@@ -1,12 +1,12 @@
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, render_template
 from base64 import b64decode
-
 
 class App:
     
-    def __init__(self, eventHandler):
+    def __init__(self, eventHandler, staticPath):
         self.eventHandler = eventHandler
-        self.webApp = Flask(__name__, static_url_path='/static')
+        self.webApp = Flask(__name__, template_folder=staticPath+'/templates/', static_folder=staticPath+'/static/')
+        self.staticPath = staticPath
         self.addUrls()
 
     # Declarage pages
@@ -28,6 +28,9 @@ class App:
                     <input type=submit value=Upload>
                 </form>
             '''
+        # return render_template(
+        #     'upload.html'
+        # )
 
     # File Upload POST
     def uploaded(self):
