@@ -75,12 +75,12 @@ def get_scale(gcode, maxXY):
                     print('ja')
                     temp = re.compile("([a-zA-Z]+)([0-9]+)")
                     items = temp.match(word).groups()
-                    if int(items[1]) > x:
-                        x = int(items[1])
+                    if float(items[1]) > x:
+                        x = float(items[1])
                 elif "Y" in word:
                     temp = re.compile("([a-zA-Z]+)([0-9]+)")
                     items = temp.match(word).groups()
-                    if int(items[1]) > y:
-                        y = int(items[1])
+                    if float(items[1]) > y:
+                        y = float(items[1])
     scale = maxXY / max(x, y)
     return scale
