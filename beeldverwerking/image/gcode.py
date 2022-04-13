@@ -6,7 +6,7 @@ import re
 TOLERANCES['approximation'] = 0.8
 
 def svgToGcode(path, name):
-    try:
+    # try:
         gcode_compiler = Compiler(interfaces.Gcode, movement_speed=100, cutting_speed=100, pass_depth=0)
 
         curves = parse_file(path + "/" + name) # Parse an svg file into geometric curves
@@ -15,15 +15,18 @@ def svgToGcode(path, name):
         gcode_compiler.compile_to_file(path + "/" + "tmp.gcode", passes=1)
         
         with open(path + "/" + 'tmp.gcode', "r") as gcode:
-            gcode = simplifier(list(gcode))
+            gcode = list(gcode)
+            scale = get_scale(gcode, 25000)
+            gcode = simplifier(gcode, scale)
 
         return gcode
-    except:
-        return False
+    # except:
+    #     return False
 
-def simplifier(gcode):
+def simplifier(gcode, scale=False):
     down = False
     tmp_gcode = ''
+    print(gcode)
     for line in gcode[2:]:
         if "M5" in line:
             down = True
@@ -41,12 +44,18 @@ def simplifier(gcode):
                     temp = re.compile("([a-zA-Z]+)([0-9]+)")
                     items = temp.match(word).groups()
                     tmp_gcode +=(items[0])
-                    tmp_gcode +=(str(float(items[1]) * 20))
+                    if scale:
+                        tmp_gcode +=(str(float(items[1]) * scale))
+                    else:
+                        tmp_gcode +=(str(float(items[1])))
                 elif "Y" in word:
                     temp = re.compile("([a-zA-Z]+)([0-9]+)")
                     items = temp.match(word).groups()
                     tmp_gcode +=(items[0])
-                    tmp_gcode +=(str(float(items[1]) * 20))
+                    if scale:
+                        tmp_gcode +=(str(float(items[1]) * scale))
+                    else:
+                        tmp_gcode +=(str(float(items[1])))
                     tmp_gcode +=("")
                 if "\n" not in word:
                     tmp_gcode +=(" ")
@@ -54,3 +63,25 @@ def simplifier(gcode):
                     tmp_gcode +=("\n")
     tmp_gcode += 'G28'
     return tmp_gcode
+
+def get_scale(gcode, maxXY):
+    tmp = gcode
+    x = 0
+    y = 0
+    for line in tmp:
+        if "G" in line:
+            for word in line.split(" "):
+                print('word')
+                if "X" in word:
+                    print('ja')
+                    temp = re.compile("([a-zA-Z]+)([0-9]+)")
+                    items = temp.match(word).groups()
+                    if float(items[1]) > x:
+                        x = float(items[1])
+                elif "Y" in word:
+                    temp = re.compile("([a-zA-Z]+)([0-9]+)")
+                    items = temp.match(word).groups()
+                    if float(items[1]) > y:
+                        y = float(items[1])
+    scale = maxXY / max(x, y)
+    return scale

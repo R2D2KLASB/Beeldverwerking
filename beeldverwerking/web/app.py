@@ -99,4 +99,4 @@ class App:
 
     # Run Web Interface
     def run(self, port=5000):
-        self.webApp.run(port=port)
+        self.webApp.run(port=port, host='0.0.0.0')
