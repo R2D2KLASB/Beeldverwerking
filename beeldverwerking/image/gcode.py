@@ -16,7 +16,7 @@ def svgToGcode(path, name):
         
         with open(path + "/" + 'tmp.gcode', "r") as gcode:
             gcode = list(gcode)
-            scale = get_scale(gcode, 25000)
+            scale = getScale(gcode, 24000)
             gcode = simplifier(gcode, scale)
 
         return gcode
@@ -45,17 +45,17 @@ def simplifier(gcode, scale=False):
                     items = temp.match(word).groups()
                     tmp_gcode +=(items[0])
                     if scale:
-                        tmp_gcode +=(str(float(items[1]) * scale))
+                        tmp_gcode += str(float(items[1]) * scale).split('.')[0]
                     else:
-                        tmp_gcode +=(str(float(items[1])))
+                        tmp_gcode += str(float(items[1])).split('.')[0]
                 elif "Y" in word:
                     temp = re.compile("([a-zA-Z]+)([0-9]+)")
                     items = temp.match(word).groups()
                     tmp_gcode +=(items[0])
                     if scale:
-                        tmp_gcode +=(str(float(items[1]) * scale))
+                        tmp_gcode += str(float(items[1]) * scale).split('.')[0]
                     else:
-                        tmp_gcode +=(str(float(items[1])))
+                        tmp_gcode += str(float(items[1])).split('.')[0]
                     tmp_gcode +=("")
                 if "\n" not in word:
                     tmp_gcode +=(" ")
@@ -64,7 +64,7 @@ def simplifier(gcode, scale=False):
     tmp_gcode += 'G28'
     return tmp_gcode
 
-def get_scale(gcode, maxXY):
+def getScale(gcode, maxXY):
     tmp = gcode
     x = 0
     y = 0
@@ -72,7 +72,6 @@ def get_scale(gcode, maxXY):
         if "G" in line:
             for word in line.split(" "):
                 if "X" in word:
-                    print('ja')
                     temp = re.compile("([a-zA-Z]+)([0-9]+)")
                     items = temp.match(word).groups()
                     if float(items[1]) > x:
