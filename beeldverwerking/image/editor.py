@@ -46,6 +46,8 @@ def imageToEdge(image):
         contours, heirarchy = cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
         cv2.drawContours(image, contours, 0, (0,255,0), 1)
+
+        image = image[5:-5, 5:-5]
         
         return encode(image)
     except:
