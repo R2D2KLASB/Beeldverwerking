@@ -1,3 +1,9 @@
+## @package beeldverwerking.image.editor
+# Image editor
+#
+# Detect image edges and convert to an vector image.
+
+
 
 import io
 import cv2
@@ -7,15 +13,20 @@ import os
 from ament_index_python.packages import get_package_share_directory
 import beeldverwerking.image.gcode as gcode
 
+## Encode an image to an base64 string.
+# return base64 string
 def encode(image):
     retval, buffer = cv2.imencode('.jpg', image)
     return b64encode(buffer)
 
+## Decode an image to an base64 string.
+# return opencv image
 def decode(image):
     image = np.fromstring(b64decode(image), np.uint8)
     return cv2.imdecode(image,cv2.IMREAD_COLOR)
 
-## IMAGE TO EDGE ##
+## Find and return the contours from an image.
+# return encoded image string
 def imageToEdge(image):
     try:
         if isinstance(image, io.BufferedReader):
@@ -47,6 +58,7 @@ def imageToEdge(image):
 
         cv2.drawContours(image, contours, 0, (0,255,0), 1)
 
+        # Remove image outlinings
         image = image[5:-5, 5:-5]
         
         return encode(image)
@@ -55,7 +67,8 @@ def imageToEdge(image):
     
 
 
-# Edge TO SVG
+## Convert an images with black and white contours to an vector image.
+# return image(opencv), package path(string) and file path(string)
 def edgeToSVG(image):
     try:
         image = decode(image)

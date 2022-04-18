@@ -1,3 +1,7 @@
+## @package beeldverwerking.pi.camera
+# todo. make photo's with a pi and listen to an GPIO pin
+
+
 # from time import sleep
 # import cv2
 # import RPi.GPIO as GPIO

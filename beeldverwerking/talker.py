@@ -1,3 +1,20 @@
+## @package beeldverwerking.talker
+# Beeldverwerking interface and ROS2 talker.
+#
+# An online interface voor uploading image's that will generate and send g-code in an ROS2 publisher node.
+# Setup
+# =====
+# - Event Handler
+# - ROS2 Publisher Node
+# - Image editor
+# - Web interface
+# 
+# Todo
+# ====
+# - Live PI camera.
+# - Better looking interface.
+#
+
 from .web.app import App
 from .handler.eventhandler import eventHandler
 from .image.editor import *
@@ -11,30 +28,31 @@ from ament_index_python.packages import get_package_share_directory
 # from .pi.camera import Camera
 
 
-
+## Talker main
 def main(args=None):
+
     # Command-line parameters
     par = sys.argv
 
-    #Create ROS2 Node
+    # Create ROS2 Node
     rclpy.init(args=args)
     publisher = Publisher()
 
-    #Get package path
+    # Get package path
     rp = get_package_share_directory('beeldverwerking')
 
-    #Setup eventHandler for image editing and ros2 communication
+    # Setup eventHandler for image editing and ros2 communication
     _eventHandler = eventHandler()
 
-    #Add function to evendHandler 
-        #Image edge detection
+    ## Add functions to evendHandler 
+    #Image edge detection
     _eventHandler.createEvent('edit', lambda file: imageToEdge(file))
         #Image to SVG
     _eventHandler.createEvent('svg', lambda file: edgeToSVG(file))
         #SVG to Gcode
     _eventHandler.createEvent('gcode', lambda path, name: svgToGcode(path, name))
         #Send over ROS2
-    _eventHandler.createEvent('send', lambda image: publisher.send_image(image))
+    _eventHandler.createEvent('send', lambda image: publisher.send(image))
 
     if len(par) > 1:
         # Camera

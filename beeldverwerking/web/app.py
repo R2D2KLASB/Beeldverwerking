@@ -1,22 +1,27 @@
+## @package beeldverwerking.web.app
+# An Flask web interface.
+
 from flask import Flask, redirect, request, render_template
 from base64 import b64decode
 
+## This will create an Flask web interface for the image editor and the ROS2 talker node.
 class App:
     
+    ## Constructor
     def __init__(self, eventHandler, staticPath):
         self.eventHandler = eventHandler
         self.webApp = Flask(__name__, template_folder=staticPath+'/templates/', static_folder=staticPath+'/static/')
         self.staticPath = staticPath
         self.addUrls()
 
-    # Declarage pages
+    ## Declarage pages for flask
     def addUrls(self):
         self.webApp.add_url_rule('/', 'index', self.home, methods=["GET"])
         self.webApp.add_url_rule('/upload', 'upload', self.uploaded, methods=['POST'])
         self.webApp.add_url_rule('/send', 'send', self.send, methods=['POST'])
         self.webApp.add_url_rule('/make', 'make', self.make, methods=['POST'])
 
-    # Homepage
+    ## The Homepage
     def home(self):
         # File Upload GET
         return '''
@@ -32,7 +37,7 @@ class App:
         #     'upload.html'
         # )
 
-    # File Upload POST
+    ## File Upload POST
     def uploaded(self):
         file = request.files['file']
         extensions = ['jpg', 'jpeg', 'png']
@@ -52,7 +57,7 @@ class App:
             else:
                 return self.home() + '<h1>Error image editing</h1>'
 
-
+    ## Generate G-Code from an uploaded image.
     def make(self):
         image = request.form['image']
         svg, path, name = self.eventHandler.runEvent('svg')(image)
@@ -94,12 +99,12 @@ class App:
         else:
             return self.home + "<h1>Error creating SVG</h1>"
     
-    #Send image over ROS2
+    ##Send gcode over ROS2
     def send(self):
         image = request.form.get('gcode')
         self.eventHandler.runEvent('send')(image)
-        return '<h1>Image is sended over ros2</h1>' + self.home()
+        return '<h1>Gcode is sended over ros2</h1>' + self.home()
 
-    # Run Web Interface
+    ## Run Web Interface
     def run(self, port=5000):
         self.webApp.run(port=port, host='0.0.0.0')

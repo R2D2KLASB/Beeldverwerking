@@ -1,3 +1,11 @@
+## @package beeldverwerking.image.gcode
+# Make G-Code from an vector image.
+#
+# Todo
+# ===
+# - Optimize gcode path for faster drawing.
+
+
 from svg_to_gcode.svg_parser import parse_file
 from svg_to_gcode.compiler import Compiler, interfaces
 from svg_to_gcode import TOLERANCES
@@ -5,11 +13,13 @@ import re
 
 TOLERANCES['approximation'] = 0.8
 
+## Make from an svg image to Gcode.
+# return gcode string.
 def svgToGcode(path, name):
     # try:
         gcode_compiler = Compiler(interfaces.Gcode, movement_speed=100, cutting_speed=100, pass_depth=0)
 
-        curves = parse_file(path + "/" + name) # Parse an svg file into geometric curves
+        curves = parse_file(path + "/" + name) 
 
         gcode_compiler.append_curves(curves) 
         gcode_compiler.compile_to_file(path + "/" + "tmp.gcode", passes=1)
@@ -23,6 +33,8 @@ def svgToGcode(path, name):
     # except:
     #     return False
 
+## Remove not used lines, translate the gcode and scale with an given number.
+# return gcode string. 
 def simplifier(gcode, scale=False):
     down = False
     tmp_gcode = ''
@@ -64,6 +76,8 @@ def simplifier(gcode, scale=False):
     tmp_gcode += 'G28'
     return tmp_gcode
 
+## Get the highest X and Y cordinates and calculate the scale factor for an given boundary size.
+# return scale factor float
 def getScale(gcode, maxXY):
     tmp = gcode
     x = 0
@@ -83,3 +97,8 @@ def getScale(gcode, maxXY):
                         y = float(items[1])
     scale = maxXY / max(x, y)
     return scale
+
+## todo
+def Optimze(gcode):
+    gcode = re.sub("[ ]{2,}"," ",gcode)
+    gcode = re.sub(" \n", "\n", gcode)

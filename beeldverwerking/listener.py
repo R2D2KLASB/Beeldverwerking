@@ -1,3 +1,14 @@
+## @package beeldverwerking.listener
+# Beeldverwerking listener
+#
+# An ROS2 (string) Listener node that will print the receveid string.
+#
+# Setup
+# =====
+# - ROS2 Listener Node
+
+
+
 import rclpy
 from .listener_node.listenerNode import Listener
 
@@ -8,9 +19,6 @@ def main(args=None):
 
     rclpy.spin(listener)
 
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
     listener.destroy_node()
     rclpy.shutdown()
 
