@@ -48,11 +48,6 @@ def imageToEdge(image):
         #Invert Image
         image = (255-image)
 
-        #Threshold
-        ret, image = cv2.threshold(image, 1, 255, cv2.THRESH_OTSU)
-
-        image = image
-
         #Find Contours
         contours, heirarchy = cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
