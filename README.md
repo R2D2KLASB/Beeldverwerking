@@ -8,7 +8,7 @@ The install.sh script should download automatically the dependencies and build t
 
 ```
 cd "PATH-TO-ROS2-ENVIROMENT/src"
-git clone https://github.com/R2D2KLASB/Beeldverwerking.git -b dev
+git clone https://github.com/R2D2KLASB/Beeldverwerking.git
 cd Beeldverwerking
 ./install.sh
 ```
