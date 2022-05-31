@@ -7,10 +7,8 @@ class GameEngine():
         self.col_size = 10
         print('Player 1 Setup Ships')
         self.player1 = Player(self.row_size, self.col_size)
-        print(self.player1)
         print('Player 2 Setup Ships')
         self.player2 = Player(self.row_size, self.col_size)
-        print(self.player2)
 
 
 
@@ -34,13 +32,15 @@ class Player():
                     if self.shipBoard.validateShipPosition(newShip):
                         self.shipBoard.ships += [newShip]
                         shipSizes.remove(len(coordinates))
-                        print(self.shipBoard)
+                        if len(shipSizes) >= 1:
+                            print(self.shipBoard)
                     else:
                         print('Error Ship position')
                 else:
                     print("Error ship size")
             else:
                 print('Error ship orientation')
+        print(self)
     
     def Attack(self, player, targetplayer, coordinate):
         if coordinate in player.targetBoard.coordinates:
