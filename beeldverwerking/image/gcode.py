@@ -26,8 +26,7 @@ def svgToGcode(path, name):
         
         with open(path + "/" + 'tmp.gcode', "r") as gcode:
             gcode = list(gcode)
-            scale = getScale(gcode, 24000)
-            gcode = simplifier(gcode, scale)
+            gcode = simplifier(gcode, 24000)
 
         return gcode
     # except:
@@ -36,9 +35,15 @@ def svgToGcode(path, name):
 ## Remove not used lines, translate the gcode and scale with an given number.
 # return gcode string. 
 def simplifier(gcode, scale=False):
+    tmp = []
+    for line in gcode:
+        if '-' not in line:
+            tmp += [line]
+    gcode = tmp
+    if scale:
+        scale = getScale(gcode, scale)
     down = False
     tmp_gcode = ''
-    print(gcode)
     for line in gcode[2:]:
         if "M5" in line:
             down = True
@@ -91,10 +96,13 @@ def getScale(gcode, maxXY):
                     if float(items[1]) > x:
                         x = float(items[1])
                 elif "Y" in word:
-                    temp = re.compile("([a-zA-Z]+)([0-9]+)")
-                    items = temp.match(word).groups()
-                    if float(items[1]) > y:
-                        y = float(items[1])
+                    try:
+                        temp = re.compile("([a-zA-Z]+)([0-9]+)")
+                        items = temp.match(word).groups()
+                        if float(items[1]) > y:
+                            y = float(items[1])
+                    except:
+                        print('jammer')
     scale = maxXY / max(x, y)
     return scale
 
