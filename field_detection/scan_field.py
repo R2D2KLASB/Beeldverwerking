@@ -1,18 +1,32 @@
 import cv2
-import imutils
 import numpy as np
-import scipy
-from scipy import ndimage
 
-# # Load image
-baord_original = cv2.imread('border.jpg')
-baord_original2 = cv2.imread('border2.jpg')
-baord_original3 = cv2.imread('border3.jpg')
-boot_original = cv2.imread('boot1_crop.jpg')
-boot_original2 = cv2.imread('boot1.jpg')
-sudoku = cv2.imread('sudoku1.jpg')
+boot_original = cv2.imread('outlined.jpg')
 
-def get_perspective(img, location, height = 800, width = 800):
+def select_frame():
+    cv2.namedWindow("preview")
+    #Select Source
+    vc = cv2.VideoCapture(1)
+    frame_height = 0
+    frame_width = 0
+    vc.set(3, 1920)
+    vc.set(4, 1080)
+
+    if vc.isOpened(): # try to get the first frame
+        rval, frame = vc.read()
+    else:
+        rval = False
+
+    while rval:
+        rval, frame = vc.read()
+        cv2.imshow("preview", frame)
+        key = cv2.waitKey()
+        if key == 27: # exit on ESC
+            pass
+        else:
+            return frame
+
+def get_perspective(img, location, height = 804, width = 804):
     loc_index = list(range(4))
 
     x = 0
@@ -25,7 +39,7 @@ def get_perspective(img, location, height = 800, width = 800):
     
     max_sum = location[0][0][x] + location[0][0][y]
     min_sum = location[0][0][x] + location[0][0][y]
-
+    
     # find top left and bottom right
     for i in loc_index:
         if location[i][0][x] + location[i][0][y] >= max_sum:
@@ -62,42 +76,45 @@ def get_perspective(img, location, height = 800, width = 800):
 
 def detect_board(image):
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # gaussian_smoothed = scipy.ndimage.convolve(gray_image, gaussian_smooth_mask)
     bilateral_filtered = cv2.bilateralFilter(gray_image, 13, 20, 20)
     canny_filtered = cv2.Canny(bilateral_filtered, 30, 180)
-    
+
     contours, hierarchy = cv2.findContours(canny_filtered.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    # contours = imutils.grab_contours(contours)
     contour_image = cv2.drawContours(image = image.copy(), contours = contours, contourIdx = -1, color = (0, 255, 0), thickness = 1)
 
-    cv2.imshow("Board", contour_image)
-    cv2.waitKey()
-
+    # cv2.imshow('board', contour_image)
+    # cv2.waitKey()
     contours = sorted(contours, key=cv2.contourArea, reverse=True)[:15]
     location = None
-    # Finds rectangular contour
 
+    # Finds rectangular contour
     for contour in contours:
         approx = cv2.approxPolyDP(contour, 15, True)
         if len(approx) == 4:
             location = approx
             break
     result = get_perspective(image, location)
-    cv2.imshow('board', result)
-    cv2.waitKey()
+    # Resultaat showen in interface zodat zeker is dat veld goed gedetecteerd is
+    # cv2.imshow('board', result)
+    # cv2.waitKey()
     return result, location
 
 def split_boxes(board):
     """Takes an image of the board and split it into 100 cells (10 x 10).
     each cell contains an element of that board is either occupied or an empty cell."""
-    rows = np.vsplit(board,10)
+    rows = np.vsplit(board, 12)
+    del rows[-1]
+    del rows[0]
+    print(type(rows))
     boxes = []
     for row in rows:
-        cols = np.hsplit(row,10)
+        cols = np.hsplit(row,12)
+        del cols[-1]
+        del cols[0]
         for box in cols:
-            # cv2.imshow("Splitted block", box)
-            # cv2.waitKey()
             boxes.append(box)
+            # cv2.imshow('board', box)
+            # cv2.waitKey()
     return boxes
 
 def create_2D_field(boxes):
@@ -118,11 +135,10 @@ def create_2D_field(boxes):
                     box[y][x] = 0
                     pixels_filled += 1
         pixel_ratio = ((pixels_filled / total_pixels) * 100)
-        if pixel_ratio > 90:
+        if pixel_ratio > 80:
             field[index // 10][index % 10] = 1
         index += 1
-        # cv2.imshow('box', box)
-        # cv2.waitKey()
+    print(field)
     return field
 
 def get_boats(field):
@@ -138,23 +154,35 @@ def get_boats(field):
                     boat = []
                     coorinates_checked.append([y, x])
                     boat.append([y, x])
-                    if field[y + length][x] == 1:
+                    if ((y+length) < 10) and field[y + length][x] == 1:
                         while field[y + length][x] == 1:
                             coorinates_checked.append([y + length, x])
                             boat.append([y + length, x])
-                            length += 1
-                    elif field[y][x + length] == 1:
+                            if (y + length) < 9:
+                                length += 1
+                            else:                                                                                                                                                                                                                                                                                                                                          
+                                break
+                    elif ((x + length) < 10) and field[y][x + length] == 1:
                         while field[y][x + length] == 1:
                             coorinates_checked.append([y, x + length])
                             boat.append([y, x + length])
-                            length += 1
+                            if (x + length) < 9:
+                                length += 1
+                            else:
+                                break
                     boats.append(boat)
+    for boat in boats:
+        print(boat)
     return boats
 
+# use this to make frame with webcam
+# frame = select_frame()
+# board, location = detect_board(frame)
+
+# use this for premade frame
 board, location = detect_board(boot_original)
+
 gray_image = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
 boxes = split_boxes(gray_image)
 field = create_2D_field(boxes)
 boat_list = get_boats(field)
-# cv2.imshow("Board", board)
-# cv2.waitKey()
