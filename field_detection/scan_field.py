@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-boot_original = cv2.imread('outlined.jpg')
+boot_test_image = cv2.imread('outlined.jpg')
 
 def select_frame():
     cv2.namedWindow("preview")
@@ -105,7 +105,6 @@ def split_boxes(board):
     rows = np.vsplit(board, 12)
     del rows[-1]
     del rows[0]
-    print(type(rows))
     boxes = []
     for row in rows:
         cols = np.hsplit(row,12)
@@ -138,7 +137,8 @@ def create_2D_field(boxes):
         if pixel_ratio > 80:
             field[index // 10][index % 10] = 1
         index += 1
-    print(field)
+    # print board with 0 for empty cells and 1 for boats
+    # print(field)
     return field
 
 def get_boats(field):
@@ -171,18 +171,26 @@ def get_boats(field):
                             else:
                                 break
                     boats.append(boat)
-    for boat in boats:
-        print(boat)
+    # print boat list
+    # for boat in boats:
+    #     print(boat)
     return boats
 
-# use this to make frame with webcam
-# frame = select_frame()
-# board, location = detect_board(frame)
+def detect_and_return_boats(image):
+    # use this to make frame with webcam
+    # frame = select_frame()
+    # board, location = detect_board(frame)
 
-# use this for premade frame
-board, location = detect_board(boot_original)
+    # use this for premade frame
+    board, location = detect_board(image)
 
-gray_image = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
-boxes = split_boxes(gray_image)
-field = create_2D_field(boxes)
-boat_list = get_boats(field)
+    gray_image = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
+    boxes = split_boxes(gray_image)
+    field = create_2D_field(boxes)
+    boat_list = get_boats(field)
+
+    return boat_list
+
+boat_list = detect_and_return_boats(boot_test_image)
+for boat in boat_list:
+    print(boat)
