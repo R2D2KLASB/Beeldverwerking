@@ -21,10 +21,8 @@ def select_frame():
     while rval:
         rval, frame = vc.read()
         cv2.imshow("preview", frame)
-        key = cv2.waitKey()
-        if key == 27: # exit on ESC
-            pass
-        else:
+        key = cv2.waitKey(20)
+        if key == 32: # exit on SPACEBAR
             return frame
 
 def get_perspective(img, location, height = 804, width = 804):
