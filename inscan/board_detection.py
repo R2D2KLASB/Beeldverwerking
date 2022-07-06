@@ -67,7 +67,8 @@ def line_intersections(h_lines, v_lines):
             points.append(inter_point)
     return np.array(points)
 
-
+#  van af hier testen rest werkt
+#  Cluster verzameling van intersect points
 def cluster_points(points):
     dists = spatial.distance.pdist(points)
     single_linkage = cluster.hierarchy.single(dists)
@@ -80,7 +81,7 @@ def cluster_points(points):
         np.array(arr)[:, 1])), cluster_values)
     return sorted(list(clusters), key=lambda k: [k[1], k[0]])
 
-
+# Soortert de cluster in array om ze te gebruiken en te zeten in 2d array
 def augment_points(points):
     points_shape = list(np.shape(points))
     augmented_points = []
@@ -101,7 +102,7 @@ def augment_points(points):
     augmented_points = sorted(augmented_points, key=lambda k: [k[1], k[0]])
     return augmented_points
 
-
+#  image cropper werkt nog niet verder naar kijken later.
 def write_crop_images(img, points, img_count=0, folder_path='./Data/raw_data/'):
     num_list = []
     shape = list(np.shape(points))
